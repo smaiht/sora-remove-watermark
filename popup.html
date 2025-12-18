@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html, body { 
+            width: 380px; 
+            height: 280px;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        .container {
+            padding: 16px;
+        }
+        
+        /* Liquid Glass Card */
+        .glass-card {
+            position: relative;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            height: 224px;
+        }
+        
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        
+        /* Loader */
+        .loader { 
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .spinner-ring {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #fff;
+            animation: spin 0.8s ease-in-out infinite;
+            margin-bottom: 16px;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .animate-spin { animation: spin 0.8s linear infinite; }
+        
+        .loader-text { 
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: -0.2px;
+        }
+        
+        /* Error */
+        .error { 
+            display: none;
+            height: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            gap: 12px;
+        }
+        
+        .error-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        
+        .error-link:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .error-link svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Result */
+        .result { 
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .card-content {
+            display: flex;
+            gap: 14px;
+            padding: 14px;
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .thumb-wrap {
+            flex-shrink: 0;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .thumb { 
+            height: 100%;
+            width: auto;
+            display: block;
+            object-fit: cover;
+        }
+        
+        .info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        
+        .prompt { 
+            font-size: 14px; 
+            color: #fff;
+            line-height: 1.45;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .meta { 
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 8px;
+            font-weight: 500;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-tag {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+        
+        .spacer { flex: 1; }
+        
+        /* Download Button */
+        .download-btn { 
+            width: 100%; 
+            padding: 12px 16px; 
+            font-size: 14px; 
+            font-weight: 500;
+            border: none; 
+            border-radius: 0 0 24px 24px;
+            cursor: pointer; 
+            background: rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .download-btn:hover { 
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .download-btn:active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .download-btn:disabled { 
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .download-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* Branding */
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 12px 0 4px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .brand:hover {
+            color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="glass-card">
+            <div class="loader" id="loader">
+                <div class="spinner-ring"></div>
+                <div class="loader-text" id="loaderText">Searching video...</div>
+            </div>
+            
+            <div class="error" id="error"></div>
+            
+            <div class="result" id="result">
+                <div class="card-content">
+                    <div class="thumb-wrap" id="thumbWrap">
+                        <img class="thumb" id="thumb">
+                    </div>
+                    <div class="info">
+                        <div class="prompt" id="prompt"></div>
+                        <div class="meta" id="meta"></div>
+                        <div class="spacer"></div>
+                    </div>
+                </div>
+                <button class="download-btn" id="downloadBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle><path fill="currentColor" fill-rule="evenodd" d="M12 7.1a.9.9 0 0 1 .9.9v4l-.05 1.9 1.514-1.536a.9.9 0 1 1 1.272 1.272l-3 3a.9.9 0 0 1-1.272 0l-3-3a.9.9 0 0 1 1.272-1.272L11.15 13.9 11.1 12V8a.9.9 0 0 1 .9-.9" clip-rule="evenodd"></path></svg>
+                    <span>Download Original</span>
+                </button>
+            </div>
+        </div>
+        <a href="https://github.com/smaiht/sora-remove-watermark" target="_blank" class="brand" title="View on GitHub">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+    </div>
+    <script src="i18n.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>
