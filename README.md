@@ -2,6 +2,9 @@
 
 Download Sora videos in original quality without watermark.
 
+# Install Browser Extension
+- https://chromewebstore.google.com/detail/sora-remove-watermark/femmbfkejicbihcplfopaiokeagdkjgg
+
 
 ## Features
 
