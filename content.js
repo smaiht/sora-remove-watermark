@@ -66,9 +66,9 @@ function cacheGeneration(item, gen) {
 }
 
 // Fetch notif page
-async function fetchNotifPage(before = null, limit = 100) {
+async function fetchNotifPage(cursor = null, limit = 100, direction = 'after') {
     let url = `https://sora.chatgpt.com/backend/notif?limit=${limit}`;
-    if (before) url += `&before=${before}`;
+    if (cursor) url += `&${direction}=${cursor}`;
     
     const response = await fetch(url, { headers: headers() });
     if (response.status === 401) throw new Error('TOKEN_EXPIRED');
@@ -91,7 +91,7 @@ function processBatch(data) {
 
 // Load old history (one batch)
 async function loadOldBatch() {
-    const data = await fetchNotifPage(oldestCursor, 100);
+    const data = await fetchNotifPage(oldestCursor, 100, 'after');
     const firstId = processBatch(data);
     
     // Remember newest id if this is first batch
@@ -109,7 +109,7 @@ async function loadFreshUntilCached() {
     let limit = 10;
     
     while (true) {
-        const data = await fetchNotifPage(cursor, limit);
+        const data = await fetchNotifPage(cursor, limit, 'before');
         let caughtUp = false;
         
         for (const item of data.data || []) {
